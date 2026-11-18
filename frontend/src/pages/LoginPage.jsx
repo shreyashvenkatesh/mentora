@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
-  const [status, setStatus] = useState({ type: '', message: '' });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,13 +14,16 @@ function LoginPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.email || !form.password) {
-      setStatus({ type: 'error', message: 'Please enter both email and password.' });
+      setError('Please enter both your email and password.');
       return;
     }
-    setStatus({
-      type: 'success',
-      message: 'Form validated! Ready to connect to Node/Express auth API.',
-    });
+
+    const displayName = form.email.split('@')[0];
+    localStorage.setItem(
+      'mentora_user',
+      JSON.stringify({ name: displayName, email: form.email })
+    );
+    navigate('/dashboard');
   };
 
   return (
@@ -37,9 +41,7 @@ function LoginPage() {
         <p className="auth-subtitle">Sign in to access your study workspace.</p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          {status.message && (
-            <div className={`auth-alert ${status.type}`}>{status.message}</div>
-          )}
+          {error && <div className="auth-alert error">{error}</div>}
 
           <div className="form-group">
             <label htmlFor="email">Email</label>

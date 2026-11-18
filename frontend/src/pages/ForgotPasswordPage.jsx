@@ -9,12 +9,12 @@ function ForgotPasswordPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email) {
-      setStatus({ type: 'error', message: 'Enter your registered email address.' });
+      setStatus({ type: 'error', message: 'Please enter your registered email address.' });
       return;
     }
     setStatus({
       type: 'success',
-      message: 'If an account matches this email, a reset link will be sent.',
+      message: `Password reset instructions have been sent to ${email}.`,
     });
   };
 

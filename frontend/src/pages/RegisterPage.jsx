@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
 function RegisterPage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
-  const [status, setStatus] = useState({ type: '', message: '' });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,16 +14,15 @@ function RegisterPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email || form.password.length < 6) {
-      setStatus({
-        type: 'error',
-        message: 'Enter your name, valid email, and a password (min 6 characters).',
-      });
+      setError('Enter your name, valid email, and a password (min 6 characters).');
       return;
     }
-    setStatus({
-      type: 'success',
-      message: `Workspace ready for ${form.name}! Next we wire MongoDB registration.`,
-    });
+
+    localStorage.setItem(
+      'mentora_user',
+      JSON.stringify({ name: form.name.trim(), email: form.email })
+    );
+    navigate('/dashboard');
   };
 
   return (
@@ -40,9 +40,7 @@ function RegisterPage() {
         <p className="auth-subtitle">Organize notes, quizzes, and revision in one place.</p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          {status.message && (
-            <div className={`auth-alert ${status.type}`}>{status.message}</div>
-          )}
+          {error && <div className="auth-alert error">{error}</div>}
 
           <div className="form-group">
             <label htmlFor="name">Full Name</label>
